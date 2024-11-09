@@ -1,0 +1,30 @@
+# fly.toml app configuration file generated for edu-ai on 2024-11-09T17:11:59-03:00
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = 'edu-ai'
+primary_region = 'gru'
+
+[build]
+  builder = 'paketobuildpacks/builder:full'
+
+[env]
+  PORT = '8000'
+  LANGCHAIN_TRACING_V2 = 'true'
+  LANGCHAIN_PROJECT= 'edu-ai-hacka'
+
+[http_service]
+  internal_port = 8000
+  force_https = true
+  auto_stop_machines = 'stop'
+  auto_start_machines = true
+  min_machines_running = 0
+  processes = ['app']
+
+[[vm]]
+  memory = '1gb'
+  cpu_kind = 'shared'
+  cpus = 1
+
+
