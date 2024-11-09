@@ -14,6 +14,7 @@ chromadb
 matplotlib
 scikit-learn
 pypdf2
+uvicorn
 
 llama-parse
 langserve
