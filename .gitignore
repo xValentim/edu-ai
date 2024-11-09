@@ -2,3 +2,5 @@ env/
 .dist/
 minha_imagem.*
 .env
+temp/
+__pycache__/

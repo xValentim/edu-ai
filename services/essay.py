@@ -1,27 +1,33 @@
-import streamlit as st
-from utils import*
-
-import streamlit as st
-from streamlit import session_state as ss
-from modules.nav import MenuButtons
+# from utils import*
 
 import base64
 import mimetypes
-import mimetypes
-import base64
 
 from io import StringIO
 from openai import OpenAI
 from PyPDF2 import PdfReader
 
+from dotenv import load_dotenv
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.output_parsers import StrOutputParser
+from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 
+from langchain_groq import ChatGroq
+from models.schema_grade import *
 
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+from langchain_core.runnables import RunnablePassthrough, RunnableLambda
+from langchain_core.messages import SystemMessage, HumanMessage, AIMessage
 
-def corrige(content_md, tema):
+load_dotenv()
 
-    # texto = [doc.pages[i].extract_text() for i in range(len(doc.pages))]
-    texto = content_md
+def get_chain_feedback_essay(model="openai"):
+
+    if model == "openai":
+        _chat_ = ChatOpenAI
+        _model_name_ = "gpt-4o-2024-08-06"
+    elif model == "groq":
+        _chat_ = ChatGroq
+        _model_name_ = "llama-3.2-90b-text-preview"
     
     template = """ \n
     Aqui está o texto de redação: {texto} \n
@@ -33,7 +39,7 @@ def corrige(content_md, tema):
 
     chain = (
         prompt 
-        | ChatOpenAI(temperature=0, api_key=OPENAI_API_KEY, model="gpt-4o")
+        | _chat_(temperature=0, model=_model_name_)
         | StrOutputParser() 
         | {"redacao_limpa": RunnablePassthrough()}
     )
@@ -177,7 +183,7 @@ def corrige(content_md, tema):
 
     prompt_combined = ChatPromptTemplate.from_template(combined_rules)
 
-    llm = ChatOpenAI(temperature=0, model="gpt-4o")
+    llm = _chat_(temperature=0, model=_model_name_)
 
     messages_comp1 = [
         SystemMessage(content=base_rule),
@@ -286,4 +292,24 @@ def corrige(content_md, tema):
     
     return chain_correcao
 
+
+def get_chain_schema_feedback_essay():
+    llm = ChatOpenAI(model="gpt-4o-2024-08-06", temperature=0.0) # 100% json
+    system_prompt = """
+    Você vai receber a correção/feedback de uma redação cujas competências são 5 junto de um feedback geral. A correção é feita da seguinte forma: Existem 5 competências medidas, pra cada uma delas haverá uma nota e um feedback em texto, além de um feedback geral e uma nota geral que é composta pela soma das 5 competências.
+
+    Sua tarefa é extrair cada competência individualmente definindo o feedback e a nota.
     
+    OBS.: Caso você não encontre o schema, retorne tudo None nos campos de competências e feedbacks.
+    """
+
+    prompt = ChatPromptTemplate.from_messages(
+            [
+                ("system", system_prompt), 
+                ("human", "Essay: \n\n {document}")
+            ]
+    )
+    
+    llm_with_tools_extraction = llm.bind_tools([GetSchema]) #, strict=True)
+    chain_structured_extraction = prompt | llm_with_tools_extraction
+    return chain_structured_extraction
