@@ -11,7 +11,7 @@ from PIL import Image
 from llama_parse import LlamaParse 
 import json
 
-def get_parse_md(path: str) -> str:
+async def get_parse_md(path: str) -> str:
     """Faz o parse de uma imagem de redação."""
     remoteFile = urlopen(Request(path)).read()
     memoryFile = BytesIO(remoteFile)
