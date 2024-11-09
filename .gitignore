@@ -1,0 +1,4 @@
+env/
+.dist/
+minha_imagem.*
+.env
