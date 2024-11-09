@@ -6,18 +6,36 @@ from langchain_core.output_parsers import StrOutputParser
 from langchain_groq import ChatGroq
 from langserve import add_routes
 from dotenv import load_dotenv
+from contextlib import asynccontextmanager
 
 from services.essay import *
 from services.parse import *
 from models.input_essay import *
+from models.schema_query import *
+from models.schema_output_search import *
 from utils import *
 
 load_dotenv()
+
+def format_docs(docs):
+    return "\n\n".join([d.page_content for d in docs])
+
+vdb_simu = vector_db_simu()
+vdb = vector_db()
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    print("Setting up...")
+    
+    print("Setup done.")
+    yield
+    print("Cleaning up...")
 
 app = FastAPI(
     title="LangChain Server",
     version="1.0",
     description="A simple api server using Langchain's Runnable interfaces",
+    lifespan=lifespan,
 )
 
 @app.get("/")
@@ -38,6 +56,34 @@ async def essay(input_essay: InputEssay):
     output = format_schemas_output(response_essay, response_schema_essay, id_essay)
     return output
 
+@app.post("/vector-search-mock")
+async def vector_search_mock(input_query: InputQuery):
+    
+    global vdb_simu
+    global vdb
+    
+    query = input_query.query
+    k = min(input_query.k, 10)
+    
+    retriever_simu = vdb_simu.as_retriever(search_type="similarity", 
+                                           search_kwargs={"k": k})
+    retriever = vdb.as_retriever(search_type="similarity", 
+                                 search_kwargs={"k": k})
+    
+    response_simu = retriever_simu.invoke(query)
+    response_video = retriever.invoke(query)
+    
+    
+    
+    output = OutputSearch(response_simu=[x.page_content for x in response_simu], 
+                          response_video=[x.page_content for x in response_video])
+    
+    return output
+
+@app.post("/generate-mock")
+async def generate_mock(input_query: InputQuery):
+    
+    pass
 
 # if __name__ == "__main__":
 #     import uvicorn
