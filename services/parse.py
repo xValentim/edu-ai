@@ -11,7 +11,7 @@ from PIL import Image
 from llama_parse import LlamaParse 
 import json
 
-async def get_parse_md(path: str) -> str:
+def get_parse_md(path: str) -> str:
     """Faz o parse de uma imagem de redação."""
     remoteFile = urlopen(Request(path)).read()
     memoryFile = BytesIO(remoteFile)
@@ -22,6 +22,7 @@ async def get_parse_md(path: str) -> str:
     llamaparse = LlamaParse(premium_mode=True)
     parsed_result = llamaparse.get_json_result("./temp/temp_img_essay.png")
     try:
+        print(parsed_result[0]['pages'][0]['md'])
         return parsed_result[0]['pages'][0]['md']
     except:
         return "Erro ao fazer o parse da imagem."

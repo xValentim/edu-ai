@@ -52,7 +52,7 @@ async def essay(input_essay: InputEssay):
     id_essay = input_essay.id_essay
     tema = input_essay.subject
     content_md = get_parse_md(path_essay)
-    chain_essay_md = get_chain_feedback_essay(model="groq")
+    chain_essay_md = get_chain_feedback_essay(model="openai")
     chain_essay_schema = get_chain_schema_feedback_essay()
     response_essay = chain_essay_md.invoke({"texto": content_md,
                                             "tema": tema})
