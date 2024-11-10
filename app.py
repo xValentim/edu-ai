@@ -98,7 +98,7 @@ async def generate_mock(input_query: InputQuery):
     retriever = vdb.as_retriever(search_type="similarity", 
                                  search_kwargs={"k": k})
     
-    chain_final = get_final_chain(model="groq",
+    chain_final = get_final_chain(model="openai",
                                   retriever_simu=retriever_simu, 
                                   retriever=retriever)
     
@@ -106,9 +106,9 @@ async def generate_mock(input_query: InputQuery):
     
     print(response_structured)
     
-    output = OutputMock(response=response_structured)
+    # output = OutputMock(response=response_structured)
     
-    return output
+    return response_structured
 
 
 # if __name__ == "__main__":
