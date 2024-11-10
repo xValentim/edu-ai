@@ -10,9 +10,13 @@ from contextlib import asynccontextmanager
 
 from services.essay import *
 from services.parse import *
+from services.mock import *
+
 from models.input_essay import *
 from models.schema_query import *
 from models.schema_output_search import *
+from models.schema_mock import *
+
 from utils import *
 
 load_dotenv()
@@ -82,8 +86,30 @@ async def vector_search_mock(input_query: InputQuery):
 
 @app.post("/generate-mock")
 async def generate_mock(input_query: InputQuery):
+
+    global vdb_simu
+    global vdb
     
-    pass
+    query = input_query.query
+    k = min(input_query.k, 10)
+    
+    retriever_simu = vdb_simu.as_retriever(search_type="similarity", 
+                                           search_kwargs={"k": k})
+    retriever = vdb.as_retriever(search_type="similarity", 
+                                 search_kwargs={"k": k})
+    
+    chain_final = get_final_chain(model="groq",
+                                  retriever_simu=retriever_simu, 
+                                  retriever=retriever)
+    
+    response_structured = chain_final.invoke({"user_query": query})
+    
+    print(response_structured)
+    
+    output = OutputMock(response=response_structured)
+    
+    return output
+
 
 # if __name__ == "__main__":
 #     import uvicorn
