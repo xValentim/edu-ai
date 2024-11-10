@@ -86,6 +86,7 @@ async def vector_search_mock(input_query: InputQuery):
 
 @app.post("/generate-mock")
 async def generate_mock(input_query: InputQuery):
+
     global vdb_simu
     global vdb
     
@@ -108,6 +109,7 @@ async def generate_mock(input_query: InputQuery):
     output = OutputMock(response=response_structured)
     
     return output
+
 
 # if __name__ == "__main__":
 #     import uvicorn
