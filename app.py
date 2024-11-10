@@ -51,12 +51,12 @@ async def essay(input_essay: InputEssay):
     path_essay = input_essay.path_essay
     id_essay = input_essay.id_essay
     tema = input_essay.subject
-    content_md = get_parse_md(path_essay)
+    content_md = await get_parse_md(path_essay)
     chain_essay_md = get_chain_feedback_essay(model="openai")
     chain_essay_schema = get_chain_schema_feedback_essay()
-    response_essay = chain_essay_md.invoke({"texto": content_md,
+    response_essay = await chain_essay_md.ainvoke({"texto": content_md,
                                             "tema": tema})
-    response_schema_essay = chain_essay_schema.invoke({"document": response_essay})
+    response_schema_essay = await chain_essay_schema.ainvoke({"document": response_essay})
     output = format_schemas_output(response_essay, response_schema_essay, id_essay)
     return output
 
