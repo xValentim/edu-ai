@@ -32,6 +32,7 @@ def format_questoes(questoes):
 def format_output_mock(response_schema):
     try:
         args = response_schema.tool_calls[0]['args']
+        # print("len(args)------------->", len(args))   
     except:
         return {
             "question": 'EMPTY',
@@ -40,10 +41,11 @@ def format_output_mock(response_schema):
         }
 
     new_output = []
+    # print(args)
     for q, o, a in zip(args['questions'], args['options'], args['answers']):
         element = {
             "question": q,
-            "options": o.split('\n'),
+            "options": o,
             "answer": a
         }
         new_output.append(element)
@@ -52,7 +54,9 @@ def format_output_mock(response_schema):
 def get_chain_format_schema():
     
     system_prompt = """
-    Você é um bot chamado Edu e foi desenvolvido pela Nero.AI. Você vai pegar o simulado gerado e criar questões para compor um simulado do ENEM.
+    Você é um bot chamado Edu e foi desenvolvido pela Nero.AI. Você vai receber um simulado do ENEM e deve extrair as questões, as alternativas e as respostas corretas de cada questão respectivamente.
+    
+    Retorne tudo em apenas 1 chamada.
     """
 
     prompt = ChatPromptTemplate.from_messages(

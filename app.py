@@ -103,11 +103,23 @@ async def generate_mock(input_query: InputQuery):
     
     response_structured = chain_final.invoke({"user_query": query})
     
-    print(response_structured)
+    new_content = []
+    for content in response_structured:
+        new_content.append({"question": content["question"], 
+                            "options": content["options"],
+                            "answer": content["answer"]})
+    new_content = [{"question": x["question"], 
+                    "options": x["options"].split("\n"),
+                    "answer": x["answer"]} for x in new_content]
+    # print(response_structured)
     
-    output = OutputMock(response=response_structured)
+    # questions = [Question(question=x['question'],
+    #                       options=x['options'],
+    #                       answer=x['answer']) for x in response_structured]
     
-    return output
+    # output = OutputMock(questions=questions)
+    
+    return new_content
 
 # if __name__ == "__main__":
 #     import uvicorn
