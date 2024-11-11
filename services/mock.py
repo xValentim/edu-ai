@@ -166,8 +166,8 @@ def get_chain_mock(retriever_simu,
     
     return chain
 
-def get_final_chain(retriever_simu, retriever, model="groq", ):
-    chain_mock = get_chain_mock(model="groq", 
+def get_final_chain(retriever_simu, retriever, model="openai", ):
+    chain_mock = get_chain_mock(model=model,
                                 retriever_simu=retriever_simu, 
                                 retriever=retriever)
     chain_schema_mock = get_chain_format_schema()
