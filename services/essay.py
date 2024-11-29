@@ -20,14 +20,19 @@ from langchain_core.messages import SystemMessage, HumanMessage, AIMessage
 
 load_dotenv()
 
-def get_chain_feedback_essay(model="openai"):
+def get_chain_feedback_essay(model="openai", model_name='gemma2-9b-it'):
+
+    model_name_list = ["gemma-7b-it", "llama-3.2-90b-text-preview", "gemma2-9b-it"]
 
     if model == "openai":
         _chat_ = ChatOpenAI
         _model_name_ = "gpt-4o-2024-08-06"
-    elif model == "groq":
+    elif model == "groq": # gemma-7b-it ; llama-3.2-90b-text-preview ; gemma2-9b-it
         _chat_ = ChatGroq
-        _model_name_ = "llama-3.2-90b-text-preview"
+        if model_name not in model_name_list:
+            _model_name_ = "gemma2-9b-it"
+        else:
+            _model_name_ = model_name
     
     template = """ \n
     Aqui está o texto de redação: {texto} \n
