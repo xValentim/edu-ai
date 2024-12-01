@@ -8,9 +8,9 @@ The present repo is the AI API with LLM services.
 
 You can find repo bots with gaussian splatting [here](https://github.com/xValentim/hacka-cult-bot).
 
-### Repo iOS
+### Repo Web
 
-You can find repo front [here](https://github.com/giovannamoeller/edu-ai-iOS).
+You can find repo front [here](https://github.com/giovannamoeller/edu-ai-web).
 
 ### Repo Backend
 
